@@ -18,7 +18,7 @@ func main() {
 
 	http.HandleFunc("/gps", registerHub.HandleWebSocket)
 	http.HandleFunc("/getgps", getHub.HandleWebSocket)
-	err := http.ListenAndServe("localhost:80", nil)
+	err := http.ListenAndServe("localhost:81", nil)
 	if err != nil {
 		log.Fatal(err)
 	}

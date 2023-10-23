@@ -18,6 +18,14 @@ func New(s *service.Service) Server {
 	server := &Server{service: s}
 
 	router := mux.NewRouter()
+	router.Use(func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+
+			h.ServeHTTP(w, r)
+		})
+	})
+
 	router.HandleFunc("/", server.getMunicipios).Methods(http.MethodGet)
 
 	//municipio
