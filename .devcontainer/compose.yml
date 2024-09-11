@@ -1,0 +1,23 @@
+name: parqueadero-back
+
+services:
+  development:
+    build: ./
+    volumes:
+      - type: bind
+        source: ../
+        target: /src
+    depends_on:
+      - postgres
+    stdin_open: true
+    tty: true
+    ports:
+      - 80:80
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example

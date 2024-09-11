@@ -20,7 +20,7 @@ type iBus interface {
 
 type iprogramacion interface {
 	GetProgramaciones() ([]model.Programacion, error)
-	CreateProgramacion(model.Programacion) error
+	CreateProgramacion(model.CreateProgramacion) error
 	// DeleteParqueadero(int64) error
 }
 

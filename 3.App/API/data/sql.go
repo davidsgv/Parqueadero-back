@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	host     = "172.17.0.3"
+	host     = "postgres"
 	port     = 5432
 	user     = "postgres"
 	password = "example"
@@ -230,14 +230,14 @@ func (repo *PostgresRepository) GetProgramaciones() ([]model.Programacion, error
 	return programaciones, nil
 }
 
-func (repo *PostgresRepository) CreateProgramacion(programacion model.Programacion) error {
+func (repo *PostgresRepository) CreateProgramacion(programacion model.CreateProgramacion) error {
 	var query string = `
 		INSERT INTO programacion (llegada, salida, estadia, bus_id, parqueadero_id)
 		VALUES ($1, $2, $3, $4, $5)
 	`
 
 	result, err := repo.db.Exec(query, programacion.Llegada, programacion.Salida, programacion.Estadia,
-		programacion.Bus.Id, programacion.Parqueadero.Id)
+		programacion.BusId, programacion.ParqueaderoId)
 	if err != nil {
 		return err
 	}

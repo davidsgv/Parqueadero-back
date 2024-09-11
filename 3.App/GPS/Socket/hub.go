@@ -1,7 +1,6 @@
-package wsregister
+package socket
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"sync"
@@ -13,22 +12,24 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-type Hub struct {
-	clients    []*Client
-	register   chan *Client
-	unregister chan *Client
-	mutex      *sync.Mutex
-	callback   func()
+func NewHub(clientConstructor func() ClientEvents) *Hub {
+	return &Hub{
+		clients:           make([]*Client, 0),
+		register:          make(chan *Client),
+		unregister:        make(chan *Client),
+		mutex:             &sync.Mutex{},
+		clientConstructor: clientConstructor,
+		outbound:          make(chan []byte),
+	}
 }
 
-func NewHub(callback func()) *Hub {
-	return &Hub{
-		clients:    make([]*Client, 0),
-		register:   make(chan *Client),
-		unregister: make(chan *Client),
-		mutex:      &sync.Mutex{},
-		callback:   callback,
-	}
+type Hub struct {
+	clients           []*Client
+	clientConstructor func() ClientEvents
+	register          chan *Client
+	unregister        chan *Client
+	mutex             *sync.Mutex
+	outbound          chan []byte
 }
 
 func (hub *Hub) Run() {
@@ -36,11 +37,15 @@ func (hub *Hub) Run() {
 		select {
 		case client := <-hub.register:
 			hub.onConnect(client)
-			fmt.Println(client)
 		case client := <-hub.unregister:
-			fmt.Println(client)
-			//hub.onDisconnect(client)
+			hub.onDisconnect(client)
 		}
+	}
+}
+
+func (hub *Hub) Broadcast() {
+	for _, e := range hub.clients {
+		e.clientEvents.SendMessage()
 	}
 }
 
@@ -70,7 +75,6 @@ func (hub *Hub) onDisconnect(client *Client) {
 	copy(hub.clients[i:], hub.clients[i+1:])
 	hub.clients[len(hub.clients)-1] = nil
 	hub.clients = hub.clients[:len(hub.clients)-1]
-
 }
 
 func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -80,8 +84,12 @@ func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error upgrading connection", http.StatusInternalServerError)
 		return
 	}
-	client := NewClient(hub, socket, hub.callback)
+
+	client := NewClient(hub, socket, hub.clientConstructor())
+	client.OnConnect()
+
 	hub.register <- client
 
 	go client.Listen()
+	go client.WriteMessage()
 }

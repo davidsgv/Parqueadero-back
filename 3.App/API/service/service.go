@@ -89,7 +89,7 @@ func (servicio *Service) GetProgramaciones() ([]model.Programacion, error) {
 	return programas, nil
 }
 
-func (servicio *Service) CreateProgramacion(programacion model.Programacion) ([]model.Programacion, error) {
+func (servicio *Service) CreateProgramacion(programacion model.CreateProgramacion) ([]model.Programacion, error) {
 	programacion.Llegada = time.Unix(programacion.LlegadaI, 0)
 	programacion.Salida = time.Unix(programacion.SalidaI, 0)
 

@@ -1,0 +1,8 @@
+# Parqueaderos
+
+TODO: Definir que va a hacer el proyecto para completarlo
+TODO: Crear docker-compose file para agregar la base de datos postgres e iniciar con la base de datos
+TODO: pasar el proyecto a la estructura recomendada para proyectos con Go
+TODO: Si es posible y vale la pena pasar de postgresql a mongo, ya que el modelo no es tan complejo y no tiene tanta redundancia en los datos
+TODO: agregar un readme y un gitignore para el proyecto
+TODO: Documentar aunque sea minimamente que hace el proyecto y agregar el diagrama creado en excalidraw
