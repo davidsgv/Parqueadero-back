@@ -1,11 +1,11 @@
 package main
 
 import (
-	"api/data"
-	"api/server"
-	"api/service"
 	"log"
 	"net/http"
+	"parqueadero-back/internal/api/data"
+	"parqueadero-back/internal/api/server"
+	"parqueadero-back/internal/api/service"
 	"time"
 )
 
