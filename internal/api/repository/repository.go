@@ -2,31 +2,16 @@ package repository
 
 import "parqueadero-back/internal/api/model"
 
-type iMunicipio interface {
+type Repository interface {
+	//municipios
 	GetMunicipios() ([]model.Municipio, error)
-}
-
-type iParqueadero interface {
+	//parqueadero
 	GetParqueaderos() ([]model.Parqueadero, error)
 	CreateParqueadero(model.Parqueadero) error
-	// DeleteParqueadero(int64) error
-}
-
-type iBus interface {
+	//bus
 	GetBuses() ([]model.Bus, error)
 	CreateBus(model.Bus) error
-	// DeleteParqueadero(int64) error
-}
-
-type iprogramacion interface {
+	//programacion
 	GetProgramaciones() ([]model.Programacion, error)
 	CreateProgramacion(model.CreateProgramacion) error
-	// DeleteParqueadero(int64) error
-}
-
-type Repository interface {
-	iMunicipio
-	iParqueadero
-	iBus
-	iprogramacion
 }

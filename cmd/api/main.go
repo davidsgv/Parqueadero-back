@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"parqueadero-back/internal/api/data"
 	"parqueadero-back/internal/api/server"
 	"parqueadero-back/internal/api/service"
@@ -10,8 +11,15 @@ import (
 )
 
 func main() {
-	//mysql, err := data.NewMysqlRepository()
-	repo, err := data.NewPostgresRepository()
+	conInfo := data.ConnectionInfo{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		DBname:   os.Getenv("DB_NAME"),
+	}
+
+	repo, err := data.NewPostgresRepository(conInfo)
 	if err != nil {
 		log.Fatal(err)
 	}
