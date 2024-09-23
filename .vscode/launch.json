@@ -17,6 +17,13 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/gps/main.go"
-        }
+        },
+        {
+            "name": "Launch Simulation",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/simulation/main.go"
+        },
     ]
 }
