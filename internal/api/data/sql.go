@@ -136,17 +136,38 @@ func (repo *PostgresRepository) CreateBus(bus model.Bus) error {
 func (repo *PostgresRepository) GetProgramaciones() ([]model.Programacion, error) {
 	var query string = `
 		SELECT 
-			bus.id, bus.placa, bus.capacidad,
-			pro.id, pro.llegada, pro.salida, pro.estadia,
-			par.id, par.nombre, par.capacidad,par.latitud, par.longitud,
-			mun.id, mun.nombre
+			bus.id,
+			bus.placa,
+			bus.capacidad,
+			pro.id,
+			pro.llegada,
+			pro.salida,
+			pro.estadia,
+			parS.id,
+			parS.nombre,
+			parS.capacidad,
+			parS.latitud,
+			parS.longitud,
+			munS.id,
+			munS.nombre,
+			parL.id,
+			parL.nombre,
+			parL.capacidad,
+			parL.latitud,
+			parL.longitud,
+			munL.id,
+			munL.nombre
 		FROM bus
 		INNER JOIN programacion pro
 			ON bus.id = pro.bus_id
-		INNER JOIN parqueadero par
-			ON pro.parqueadero_id = par.id
-		INNER JOIN municipio mun
-			ON par.municipio_id = mun.id
+		INNER JOIN parqueadero parS
+			ON pro.parqueadero_salida_id = parS.id
+		INNER JOIN municipio munS
+			ON parS.municipio_id = munS.id
+		INNER JOIN parqueadero parL
+			ON pro.parqueadero_llegada_id = parL.id
+		INNER JOIN municipio munL
+			ON parL.municipio_id = munL.id
 	`
 
 	rows, err := repo.db.Query(query)
@@ -158,14 +179,22 @@ func (repo *PostgresRepository) GetProgramaciones() ([]model.Programacion, error
 	programaciones := []model.Programacion{}
 	for rows.Next() {
 		programa := model.Programacion{
-			Bus:         model.Bus{},
-			Parqueadero: model.Parqueadero{},
+			Bus:                model.Bus{},
+			ParqueaderoSalida:  model.Parqueadero{},
+			ParqueaderoLlegada: model.Parqueadero{},
 		}
 
 		rows.Scan(&programa.Bus.Id, &programa.Bus.Placa, &programa.Bus.Capacidad,
 			&programa.Id, &programa.Llegada, &programa.Salida, &programa.Estadia,
-			&programa.Parqueadero.Id, &programa.Parqueadero.Nombre, &programa.Parqueadero.Capacidad, &programa.Parqueadero.Latitud, &programa.Parqueadero.Longitud,
-			&programa.Parqueadero.Municipio.Id, &programa.Parqueadero.Municipio.Nombre)
+
+			&programa.ParqueaderoSalida.Id, &programa.ParqueaderoSalida.Nombre, &programa.ParqueaderoSalida.Capacidad,
+			&programa.ParqueaderoSalida.Latitud, &programa.ParqueaderoSalida.Longitud,
+			&programa.ParqueaderoSalida.Municipio.Id, &programa.ParqueaderoSalida.Municipio.Nombre,
+
+			&programa.ParqueaderoLlegada.Id, &programa.ParqueaderoLlegada.Nombre, &programa.ParqueaderoLlegada.Capacidad,
+			&programa.ParqueaderoLlegada.Latitud, &programa.ParqueaderoLlegada.Longitud,
+			&programa.ParqueaderoLlegada.Municipio.Id, &programa.ParqueaderoLlegada.Municipio.Nombre,
+		)
 
 		programaciones = append(programaciones, programa)
 	}
@@ -175,12 +204,12 @@ func (repo *PostgresRepository) GetProgramaciones() ([]model.Programacion, error
 
 func (repo *PostgresRepository) CreateProgramacion(programacion model.CreateProgramacion) error {
 	var query string = `
-		INSERT INTO programacion (llegada, salida, estadia, bus_id, parqueadero_id)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO programacion (llegada, salida, estadia, bus_id, parqueadero_salida_id, parqueadero_llegada_id)
+		VALUES ($1, $2, $3, $4, $5, $6)
 	`
 
 	result, err := repo.db.Exec(query, programacion.Llegada, programacion.Salida, programacion.Estadia,
-		programacion.BusId, programacion.ParqueaderoId)
+		programacion.BusId, programacion.ParqueaderoSalidaId, programacion.ParqueaderoLlegadaId)
 	if err != nil {
 		return err
 	}
