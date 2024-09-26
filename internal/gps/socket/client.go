@@ -22,15 +22,14 @@ type Client struct {
 }
 
 func NewClient(hub *Hub, socket *websocket.Conn, clientEvents ClientEvents) *Client {
-	return &Client{
+	client := &Client{
 		hub:          hub,
 		socket:       socket,
 		clientEvents: clientEvents,
 	}
-}
 
-func (c *Client) OnConnect() {
-	c.clientEvents.OnConnect(c.id, c.hub.outbound)
+	client.clientEvents.OnConnect(client.id, client.hub.outbound)
+	return client
 }
 
 func (c *Client) Listen() {
@@ -49,22 +48,17 @@ func (c *Client) Listen() {
 }
 
 func (c *Client) WriteMessage() {
-	for {
-		select {
-		case message, ok := <-c.hub.outbound:
-			if !ok {
-				c.socket.WriteMessage(websocket.CloseMessage, []byte{})
-				return
-			}
-
-			err := c.socket.WriteMessage(websocket.TextMessage, message)
-			if err != nil {
-				log.Println("Error Writing Message:", err)
-				c.Close()
-				break
-			}
+	for message := range c.hub.outbound {
+		err := c.socket.WriteMessage(websocket.TextMessage, message)
+		if err != nil {
+			log.Println("Error Writing Message:", err)
+			c.Close()
+			return
 		}
 	}
+
+	c.socket.WriteMessage(websocket.CloseMessage, []byte{})
+	c.Close()
 }
 
 func (c Client) Close() {

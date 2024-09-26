@@ -12,6 +12,15 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
+type Hub struct {
+	clients           []*Client
+	clientConstructor func() ClientEvents
+	register          chan *Client
+	unregister        chan *Client
+	mutex             *sync.Mutex
+	outbound          chan []byte
+}
+
 func NewHub(clientConstructor func() ClientEvents) *Hub {
 	return &Hub{
 		clients:           make([]*Client, 0),
@@ -21,15 +30,6 @@ func NewHub(clientConstructor func() ClientEvents) *Hub {
 		clientConstructor: clientConstructor,
 		outbound:          make(chan []byte),
 	}
-}
-
-type Hub struct {
-	clients           []*Client
-	clientConstructor func() ClientEvents
-	register          chan *Client
-	unregister        chan *Client
-	mutex             *sync.Mutex
-	outbound          chan []byte
 }
 
 func (hub *Hub) Run() {
@@ -61,20 +61,17 @@ func (hub *Hub) onConnect(client *Client) {
 func (hub *Hub) onDisconnect(client *Client) {
 	log.Println("Client disconnected", client.socket.RemoteAddr())
 
-	client.Close()
 	hub.mutex.Lock()
 	defer hub.mutex.Unlock()
 
-	i := -1
-	for j, c := range hub.clients {
-		if c.id == client.id {
-			i = j
+	for i, item := range hub.clients {
+		if item.id == client.id {
+			index := len(hub.clients) - 1
+			hub.clients[i] = hub.clients[index]
+			hub.clients = hub.clients[:index]
 			break
 		}
 	}
-	copy(hub.clients[i:], hub.clients[i+1:])
-	hub.clients[len(hub.clients)-1] = nil
-	hub.clients = hub.clients[:len(hub.clients)-1]
 }
 
 func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
@@ -86,7 +83,6 @@ func (hub *Hub) HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := NewClient(hub, socket, hub.clientConstructor())
-	client.OnConnect()
 
 	hub.register <- client
 
