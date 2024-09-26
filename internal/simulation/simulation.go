@@ -2,6 +2,7 @@ package simulation
 
 import (
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -89,4 +90,18 @@ func Ride(programacion Programacion) error {
 
 	err = socket.Close()
 	return err
+}
+
+func Simulate() {
+	var wg sync.WaitGroup
+
+	//ride(Programaciones[0])
+	for i := range Programaciones {
+		wg.Add(1)
+		go func(i int) {
+			defer wg.Done()
+			Ride(Programaciones[i])
+		}(i)
+	}
+	wg.Wait()
 }

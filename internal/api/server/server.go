@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"parqueadero-back/internal/api/model"
 	"parqueadero-back/internal/api/service"
+	"parqueadero-back/internal/simulation"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,6 +34,8 @@ func New(s *service.Service) Server {
 
 	apiRouter.GET("/programas", server.GetProgramaciones)
 	apiRouter.POST("/programas", server.CreateProgramacion)
+
+	apiRouter.POST("/simulate", server.Simulate)
 
 	server.Router = engine
 	return *server
@@ -124,6 +127,11 @@ func (s *Server) CreateProgramacion(c *gin.Context) {
 	}
 
 	responseJson(c, buses)
+}
+
+func (s *Server) Simulate(c *gin.Context) {
+	go simulation.Simulate()
+	c.Status(http.StatusOK)
 }
 
 func responseBadRequest(c *gin.Context, err error) {
