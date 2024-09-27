@@ -1,0 +1,20 @@
+FROM golang:1.23.1-alpine3.19 AS builder
+
+# Install any needed dependencies
+RUN apk update && apk add --no-cache git
+WORKDIR /app
+
+COPY / ./
+RUN go mod download
+
+# Build the Go app (replace 'myapp' with your binary name)
+RUN go build -o api ./cmd/api
+
+# Stage 2: Run the Go app using a minimal base image
+FROM alpine:latest
+WORKDIR /app
+
+COPY --from=builder /app/api .
+EXPOSE 80
+
+CMD ["./api"]

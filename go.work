@@ -1,7 +1,0 @@
-go 1.20
-
-use (
-	./3.App/API
-	./3.App/GPS
-	./3.App/SocketSample
-)
