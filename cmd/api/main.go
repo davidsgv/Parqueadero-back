@@ -24,8 +24,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	socketURL := os.Getenv("API_SOCKETURL")
 	service := service.NewService(repo)
-	server := server.New(service)
+	server := server.New(service, socketURL)
 	// log.Fatal(http.ListenAndServe(":8080", s.Router()))
 
 	srv := &http.Server{

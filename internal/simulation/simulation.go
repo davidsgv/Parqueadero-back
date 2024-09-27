@@ -45,8 +45,8 @@ func moveCar(lat1, lat2, lon1, lon2, latD, lonD float64) (float64, float64) {
 	return newLat, newLon
 }
 
-func connect() (*websocket.Conn, error) {
-	u := url.URL{Scheme: "ws", Host: ":81", Path: "/gps"}
+func connect(socketURl string) (*websocket.Conn, error) {
+	u := url.URL{Scheme: "ws", Host: socketURl, Path: "/gps"}
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
 	return c, err
 }
@@ -55,8 +55,8 @@ func sendMessage(c *websocket.Conn, men Message) {
 	c.WriteJSON(men)
 }
 
-func Ride(programacion Programacion) error {
-	socket, err := connect()
+func Ride(programacion Programacion, socketURl string) error {
+	socket, err := connect(socketURl)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func Ride(programacion Programacion) error {
 	return err
 }
 
-func Simulate() {
+func Simulate(socketURl string) {
 	var wg sync.WaitGroup
 
 	//ride(Programaciones[0])
@@ -100,7 +100,7 @@ func Simulate() {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			Ride(Programaciones[i])
+			Ride(Programaciones[i], socketURl)
 		}(i)
 	}
 	wg.Wait()

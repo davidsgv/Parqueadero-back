@@ -11,12 +11,13 @@ import (
 
 type Server struct {
 	// Router  *mux.Router
-	Router  *gin.Engine
-	service *service.Service
+	Router    *gin.Engine
+	service   *service.Service
+	socketURL string
 }
 
-func New(s *service.Service) Server {
-	server := &Server{service: s}
+func New(s *service.Service, socketURL string) Server {
+	server := &Server{service: s, socketURL: socketURL}
 
 	engine := gin.Default()
 	apiRouter := engine.Group("/api")
@@ -130,7 +131,7 @@ func (s *Server) CreateProgramacion(c *gin.Context) {
 }
 
 func (s *Server) Simulate(c *gin.Context) {
-	go simulation.Simulate()
+	go simulation.Simulate(s.socketURL)
 	c.Status(http.StatusOK)
 }
 
