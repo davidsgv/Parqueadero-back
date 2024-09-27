@@ -169,6 +169,8 @@ get bus live locations
 
 [Excalidraw Diagram](https://excalidraw.com/#json=czxgP2yhu8F2bkc6MkZQE,4a6E030q_r0bydWHYPXO3g)
 
+![image](https://github.com/user-attachments/assets/cbb4c2ad-2200-4a3f-ae2f-c84cc3b171ef)
+
 
 ## Appendix
 
