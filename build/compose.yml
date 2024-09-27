@@ -1,0 +1,36 @@
+name: local
+
+services:
+  api:
+    image: parqueadero/api
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile.api
+    depends_on:
+      - postgres
+    ports:
+      - 80:80
+    env_file: "../.env"
+    # se espera 5 segundos por que la base de datos se demora en iniciar
+    # mientras que ejecuta los scripts de inicio
+    command: sh -c "sleep 5 && /app/api"
+
+  gps:
+    image: parqueadero/gps
+    build:
+      context: ../
+      dockerfile: ./build/Dockerfile.gps
+    ports:
+      - 81:81
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+    volumes:
+      - ../db/scripts/:/docker-entrypoint-initdb.d/
