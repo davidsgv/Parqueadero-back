@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"parqueadero-back/internal/gps/location"
@@ -26,6 +27,7 @@ func main() {
 	http.HandleFunc("/gps", registerHub.HandleWebSocket)
 	http.HandleFunc("/getgps", getHub.HandleWebSocket)
 
+	fmt.Println("Listening on port: 81")
 	err := http.ListenAndServe("0.0.0.0:81", nil)
 	if err != nil {
 		log.Fatal(err)
