@@ -3,26 +3,26 @@
 
 This app is a web socket that have two end point, one to register coordenates of a client and the other to get all the locations of the buses
 
-
 ## Tech Stack
 
 **Golang, PostgreSQL, Docker, Docker-Compose, DevContainers**
-
 
 ## Environment Variables
 
 To run this project locally, you will need to add the following environment variables to your .env file
 
 #### api
+
 - `DB_HOST="postgres"`
 - `DB_PORT="5432"`
 - `DB_USER="postgres"`
 - `DB_PASSWORD="example"`
 - `DB_NAME="postgres"`
+- `API_SOCKETURL="gps:81"`
 
 #### DB
-`POSTGRES_PASSWORD="example"`
 
+`POSTGRES_PASSWORD="example"`
 
 ## Run Locally
 
@@ -49,7 +49,6 @@ Run compose
 
 **gps:** runs on port 81
 
-
 ## API Reference
 
 #### Get all municipios
@@ -71,6 +70,7 @@ Run compose
 ```
 
 Request Body:
+
 ```json
 {
     "nombre": "nombre",
@@ -96,6 +96,7 @@ Request Body:
 ```
 
 Request Body:
+
 ```json
 {
     "placa": "abc123",
@@ -116,6 +117,7 @@ Request Body:
 ```
 
 Request Body:
+
 ```json
 {
     "llegada": 1697475384,
@@ -127,7 +129,6 @@ Request Body:
 }
 ```
 
-
 ### Simulate movement
 
 ```http
@@ -135,6 +136,7 @@ Request Body:
 ```
 
 simulate multiple buses to start tracking (check the front project)
+
 ## Socket Reference
 
 ### Send GPS data
@@ -146,11 +148,12 @@ simulate multiple buses to start tracking (check the front project)
 send bus location
 
 Request Body:
+
 ```json
 {
-    "latitude": number,
-    "longitude": number,
-    "plate": string
+    "latitude": 4.677584,
+    "longitude": -74.1478,
+    "plate": "xyz123"
 }
 ```
 
@@ -161,6 +164,12 @@ Request Body:
 ```
 
 get bus live locations
+
+## Doc
+
+[Excalidraw Diagram](https://excalidraw.com/#json=czxgP2yhu8F2bkc6MkZQE,4a6E030q_r0bydWHYPXO3g)
+
+
 ## Appendix
 
 [Front Project](https://github.com/davidsgv/Parqueadero-front).
